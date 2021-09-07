@@ -3,9 +3,29 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { RepositoryModule } from './repository/repository.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { getConnectionOptions } from 'typeorm';
+import { ServiceModule } from './service/service.module';
 
 @Module({
-  imports: [AuthModule, UsersModule],
+  imports: [
+      AuthModule,
+      UsersModule,
+      RepositoryModule,
+      ConfigModule.forRoot({
+          envFilePath: ['.env.development.local', '.env.development'],
+          isGlobal: true
+      }),
+      TypeOrmModule.forRootAsync({
+        useFactory: async () =>
+          Object.assign(await getConnectionOptions(), {
+            autoLoadEntities: true,
+          }), 
+      }),
+      ServiceModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
