@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Patch, Post, Res } from '@nestjs/common';
 import { UserService } from 'src/service/user/user.service';
 import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dto';
 import { Response } from 'express';
@@ -10,12 +10,12 @@ export class UsersController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async GetAll() {
+  async getAll() {
     return await this.userService.findAll();
   }
 
   @Post()
-  async PreRegisterUser(
+  async preRegisterUser(
     @Body() createUserRequestDto: CreateUserRequestDto,
     @Res() response: Response
   ) {
@@ -38,9 +38,16 @@ export class UsersController {
 
     const userToCreate = this.mapUserDtoToEntity(createUserRequestDto);
 
-    this.userService.add(userToCreate);
+    await this.userService.preRegisterUserAsync(userToCreate);
 
     return response.status(HttpStatus.CREATED).json();
+  }
+
+  /**@description Confirma o e-mail informado no cadastro */
+  @Patch()
+  confirmUserEmail()
+  {
+    throw Error('Implement confirmation e-mail');
   }
 
   private mapUserDtoToEntity(createUserRequestDto: CreateUserRequestDto): User {
