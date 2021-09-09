@@ -3,10 +3,12 @@ import { AuthService } from "src/service/auth/auth.service";
 import { LoginRequestDto } from "src/shared/requests/login-request.dto";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Response } from 'express';
+import { EmailService } from "src/service/email/email.service";
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService,
+            private readonly emailService: EmailService) {}
 
   @Post('/auth/login')
   @HttpCode(HttpStatus.OK)
@@ -21,9 +23,10 @@ export class AuthController {
   }
 
   @Get('hello-world')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getHello()
   {
+    this.emailService.sendEmail();
     return 'Hello World!';
   }
 }

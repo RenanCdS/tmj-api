@@ -10,3 +10,8 @@ export enum ServiceRequestStatus {
     DONE = 2,
     CANCELLED = 3
 }
+
+export enum HashType {
+    EMAIL_CONFIRMATION = 0,
+    PASSWORD_RESET = 1
+}

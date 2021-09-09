@@ -7,6 +7,7 @@ import { ServiceRequest } from './service-request.entity';
 import { UserService } from './user-service.entity';
 import { UserAddress } from './user.address.entity';
 import { Notification } from './notification.entity';
+import { Hash } from './hash.entity';
 
 @Entity({ name: 'tb_user' })
 export class User extends Base {
@@ -64,4 +65,7 @@ export class User extends Base {
 
   @OneToMany(() => Notification, notification => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => Hash, hash => hash.user)
+  hashes: Hash[];
 }

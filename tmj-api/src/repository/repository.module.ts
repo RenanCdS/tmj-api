@@ -9,6 +9,7 @@ import { UserService } from 'src/shared/models/user-service.entity';
 import { UserAddress } from 'src/shared/models/user.address.entity';
 import { User } from 'src/shared/models/user.entity';
 import { Notification } from 'src/shared/models/notification.entity';
+import { Hash } from 'src/shared/models/hash.entity';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { Notification } from 'src/shared/models/notification.entity';
                 Service,
                 UserService,
                 UserAddress,
+                Hash
         ])
     ],
     exports: [TypeOrmModule]

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Patch, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
 import { UserService } from 'src/service/user/user.service';
 import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dto';
 import { Response } from 'express';
@@ -44,10 +44,17 @@ export class UsersController {
   }
 
   /**@description Confirma o e-mail informado no cadastro */
-  @Patch()
-  confirmUserEmail()
+  @Patch(':userId/:hash')
+  async confirmUserEmail(@Param() params, @Res() response: Response)
   {
-    throw Error('Implement confirmation e-mail');
+    try {
+      await this.userService.confirmUserEmail(params.hash, params.userId);
+
+      return response.status(HttpStatus.OK).json();
+    }
+    catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json(err);
+    } 
   }
 
   private mapUserDtoToEntity(createUserRequestDto: CreateUserRequestDto): User {
