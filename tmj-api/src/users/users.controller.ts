@@ -4,6 +4,7 @@ import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dt
 import { Response } from 'express';
 import { Role } from 'src/shared/enum';
 import { User } from 'src/shared/models/user.entity';
+import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
 
 @Controller('v1/users')
 export class UsersController {
@@ -33,12 +34,17 @@ export class UsersController {
     ) {
       return response
         .status(HttpStatus.BAD_REQUEST)
-        .json({ error: 'Attempt of register invalid' });
+        .json(new ErrorResponseDto(301, 'role inválida'));
     }
 
     const userToCreate = this.mapUserDtoToEntity(createUserRequestDto);
 
-    await this.userService.preRegisterUserAsync(userToCreate);
+    try {
+      await this.userService.preRegisterUserAsync(userToCreate);
+    }
+    catch (err) {
+      return response.status(HttpStatus.BAD_REQUEST).json(err);
+    }
 
     return response.status(HttpStatus.CREATED).json();
   }

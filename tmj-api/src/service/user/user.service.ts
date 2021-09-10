@@ -4,17 +4,16 @@ import { User } from 'src/shared/models/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Hash } from 'src/shared/models/hash.entity';
-import { HashType, UserStatus } from 'src/shared/enum';
+import { ErrorCodes, ErrorMessages, HashType, UserStatus } from 'src/shared/enum';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
-import * as crypto from 'crypto';
+import { HashService } from '../hash/hash.service';
 
 @Injectable()
 export class UserService {
     constructor(
+        private readonly hashService: HashService,
         @InjectRepository(User)
-        private userRepository: Repository<User>,
-        @InjectRepository(Hash)
-        private readonly hashRepository: Repository<Hash>
+        private userRepository: Repository<User>
     ) {}
 
     findAll(): Promise<User[]> {
@@ -28,44 +27,49 @@ export class UserService {
     }
 
     async confirmUserEmail(hash: string, userId: number): Promise<void> {
-        const userHash = await this.hashRepository.findOne({ where: [
-            { hash: hash },
-            { isActive: true },
-            { userId: userId }
-        ]});
+        const userHash = await this.hashService.findLatestHashByUserId(userId, hash, HashType.EMAIL_CONFIRMATION);
 
         if (userHash !== null && userHash !== undefined) {
 
             if (userHash.expiration.getTime() <= new Date().getTime()) {
-                return Promise.reject(new ErrorResponseDto(201, 'hash expirado'));
+                return Promise.reject(new ErrorResponseDto(ErrorCodes.EXPIRED_HASH,
+                                 ErrorMessages.EXPIRED_HASH));
             }
 
-            const user = await this.userRepository.findOne({ userId });
-            user.userStatus = UserStatus.ACTIVE;
+            try {
+                const user = await this.userRepository.findOne({ userId });
+                user.userStatus = UserStatus.ACTIVE;
 
-            await this.userRepository.save(user);
+                await this.userRepository.save(user);
 
-            userHash.expiration = new Date();
+                userHash.expiration = new Date();
 
-            await this.hashRepository.save(userHash);
+                await this.hashService.saveHash(userHash);
 
-            return;
+                return;
+            }
+            catch {
+                return Promise.reject(new ErrorResponseDto(ErrorCodes.SISTEMIC_ERROR,
+                                 ErrorMessages.SISTEMIC_ERROR));
+            }
         }
 
-        return Promise.reject(new ErrorResponseDto(200, 'hash não encontrado'));
+        return Promise.reject(new ErrorResponseDto(ErrorCodes.MISSING_HASH,
+                                 ErrorMessages.MISSING_HASH));
     }
 
     async preRegisterUserAsync(user: User): Promise<any> {
         const userFromRepo = await this.userRepository.findOne({ email: user.email });
 
         if (userFromRepo !== null && userFromRepo !== undefined) {
-            return Promise.reject(new ErrorResponseDto(300, 'usuário já está cadastrado.'));
+            return Promise.reject(new ErrorResponseDto(ErrorCodes.USER_ALREADY_REGISTERED,
+                                 ErrorMessages.USER_ALREADY_REGISTERED));
         }
 
         const salt = await this.getSalt();
         user.salt = salt;
 
-        const hashedPassword = await this.hash(user.password, salt);
+        const hashedPassword = await this.generatePassword(user.password, salt);
 
         user.password = hashedPassword;
         user.userStatus = UserStatus.PENDING_EMAIL;
@@ -74,22 +78,24 @@ export class UserService {
 
         const confirmationEmailHash = new Hash();
         
-        confirmationEmailHash.hash = this.getHash();
+        confirmationEmailHash.hash = this.hashService.generateHash();
         confirmationEmailHash.user = user;
         confirmationEmailHash.hashType = HashType.EMAIL_CONFIRMATION;
         confirmationEmailHash.expiration = new Date();
         confirmationEmailHash.expiration
                             .setMinutes(confirmationEmailHash.expiration.getMinutes() + 20);
         
-        await this.hashRepository.insert(confirmationEmailHash);
+        await this.hashService.saveHash(confirmationEmailHash);
 
         this.sendConfirmationEmail(user, confirmationEmailHash.hash);
     }
 
-    getHash(): string {
-        var current_date = (new Date()).valueOf().toString();
-        var random = Math.random().toString();
-        return crypto.createHash('sha1').update(current_date + random).digest('hex');
+    async generatePassword(password: string, salt: string) {
+        return await this.hash(password, salt)
+    }
+
+    async updateUser(user: User) {
+        await this.userRepository.save(user);
     }
 
     async remove(id: string): Promise<void> {

@@ -5,8 +5,9 @@ import { AuthService } from './auth/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/constants';
 import { EmailService } from './email/email.service';
+import { HashService } from './hash/hash.service';
 
-const services = [UserService, AuthService, EmailService];
+const services = [UserService, AuthService, EmailService, HashService];
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ const services = [UserService, AuthService, EmailService];
       signOptions: { expiresIn: '60s' }
     })
   ],
-  providers: [...services, ],
+  providers: [...services],
   exports: [...services]
 })
 export class ServiceModule {}
