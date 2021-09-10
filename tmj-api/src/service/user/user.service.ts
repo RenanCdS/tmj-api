@@ -4,7 +4,7 @@ import { User } from 'src/shared/models/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Hash } from 'src/shared/models/hash.entity';
-import { HashType } from 'src/shared/enum';
+import { HashType, UserStatus } from 'src/shared/enum';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
 import * as crypto from 'crypto';
 
@@ -41,7 +41,7 @@ export class UserService {
             }
 
             const user = await this.userRepository.findOne({ userId });
-            user.isEmailConfirmed = true;
+            user.userStatus = UserStatus.ACTIVE;
 
             await this.userRepository.save(user);
 
@@ -68,6 +68,7 @@ export class UserService {
         const hashedPassword = await this.hash(user.password, salt);
 
         user.password = hashedPassword;
+        user.userStatus = UserStatus.PENDING_EMAIL;
 
         await this.userRepository.insert(user);
 

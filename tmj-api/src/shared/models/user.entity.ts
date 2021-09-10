@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Role } from '../enum';
+import { Role, UserStatus } from '../enum';
 import { Base } from './base.entity';
 import { ServiceProposedComment } from './service-proposed-comment.entity';
 import { ServiceProposed } from './service-proposed.entity';
@@ -29,8 +29,8 @@ export class User extends Base {
   @Column()
   email: string;
 
-  @Column({ default: false })
-  isEmailConfirmed: boolean;
+  @Column({ default: UserStatus.ACTIVE })
+  userStatus: UserStatus;
 
   @Column()
   password: string;
@@ -40,10 +40,6 @@ export class User extends Base {
 
   @Column({ nullable: true })
   rating: number;
-
-  /** @description Identifies if the user is active */
-  @Column({ default: false })
-  isUserActive: boolean;
 
   @OneToMany(() => UserService, userService => userService.user)
   userServices: UserService[];
