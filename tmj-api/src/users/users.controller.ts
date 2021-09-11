@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Res } from '@nes
 import { UserService } from 'src/service/user/user.service';
 import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dto';
 import { Response } from 'express';
-import { Role } from 'src/shared/enum';
+import { ErrorCodes, ErrorMessages, Genre, Role } from 'src/shared/enum';
 import { User } from 'src/shared/models/user.entity';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -31,12 +31,21 @@ export class UsersController {
     }
 
     if (
+      createUserRequestDto.genre !== Genre.MALE &&
+      createUserRequestDto.genre !== Genre.FEMALE
+    ) {
+      return response
+        .status(HttpStatus.BAD_REQUEST)
+        .json(new ErrorResponseDto(ErrorCodes.INVALID_GENRE, ErrorMessages.INVALID_GENRE));
+    }
+
+    if (
       createUserRequestDto.role !== Role.CLIENT &&
       createUserRequestDto.role !== Role.PROFESSIONAL
     ) {
       return response
         .status(HttpStatus.BAD_REQUEST)
-        .json(new ErrorResponseDto(301, 'role inválida'));
+        .json(new ErrorResponseDto(ErrorCodes.INVALID_ROLE, ErrorMessages.INVALID_ROLE));
     }
 
     const userToCreate = this.mapUserDtoToEntity(createUserRequestDto);
@@ -74,6 +83,7 @@ export class UsersController {
     user.role = createUserRequestDto.role;
     user.cpf = createUserRequestDto.cpf;
     user.phone = createUserRequestDto.phone;
+    user.genre = createUserRequestDto.genre;
 
     return user;
   }

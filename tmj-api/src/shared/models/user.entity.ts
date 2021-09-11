@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Role, UserStatus } from '../enum';
+import { Genre, Role, UserStatus } from '../enum';
 import { Base } from './base.entity';
 import { ServiceProposedComment } from './service-proposed-comment.entity';
 import { ServiceProposed } from './service-proposed.entity';
@@ -22,6 +22,9 @@ export class User extends Base {
 
   @Column()
   phone: string;
+
+  @Column()
+  genre: Genre;
 
   @Column()
   role: Role;

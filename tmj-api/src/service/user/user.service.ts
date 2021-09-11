@@ -44,11 +44,11 @@ export class UserService {
 
                 userHash.expiration = new Date();
 
-                await this.hashService.saveHash(userHash);
+                await this.hashService.invalidateHash(userHash);
 
                 return;
             }
-            catch {
+            catch (err){
                 return Promise.reject(new ErrorResponseDto(ErrorCodes.SISTEMIC_ERROR,
                                  ErrorMessages.SISTEMIC_ERROR));
             }

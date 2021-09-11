@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../enum';
+import { Genre, Role } from '../enum';
 
 export class CreateUserRequestDto {
   @ApiProperty()
@@ -14,4 +14,6 @@ export class CreateUserRequestDto {
   email: string;
   @ApiProperty()
   password: string;
+  @ApiProperty()
+  genre: Genre;
 }

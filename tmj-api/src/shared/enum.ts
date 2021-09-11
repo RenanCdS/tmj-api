@@ -29,6 +29,8 @@ export enum ErrorCodes {
     USER_ALREADY_REGISTERED = 1003,
     EXPIRED_HASH = 2001,
     MISSING_HASH = 2000,
+    INVALID_ROLE = 3000,
+    INVALID_GENRE = 3001,
     SISTEMIC_ERROR = 5000
 }
 
@@ -39,6 +41,13 @@ export enum ErrorMessages {
     USER_ALREADY_REGISTERED = 'usuário já está cadastrado',
     EXPIRED_HASH = 'hash expirado',
     MISSING_HASH = 'hash não encontrado',
-    SISTEMIC_ERROR = 'erro sistêmico'
+    SISTEMIC_ERROR = 'erro sistêmico',
+    INVALID_ROLE = 'tipo de usuário inválido',
+    INVALID_GENRE = 'gênero de usuário inválido',
+}
+
+export enum Genre {
+    MALE = 'M',
+    FEMALE = 'F'
 }
 
