@@ -5,7 +5,9 @@ import { Response } from 'express';
 import { Role } from 'src/shared/enum';
 import { User } from 'src/shared/models/user.entity';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
