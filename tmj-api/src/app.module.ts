@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
 import { ServiceModule } from './service/service.module';
+import { CustomerServiceModule } from './customer-service/customer-service.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ServiceModule } from './service/service.module';
           }), 
       }),
       ServiceModule,
+      CustomerServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

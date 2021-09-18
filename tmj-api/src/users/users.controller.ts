@@ -5,7 +5,8 @@ import { Response } from 'express';
 import { ErrorCodes, ErrorMessages, Genre, Role } from 'src/shared/enum';
 import { User } from 'src/shared/models/user.entity';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
 
 @ApiTags('users')
 @Controller('v1/users')
@@ -72,6 +73,17 @@ export class UsersController {
     catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json(err);
     } 
+  }
+
+  /** TODO: Pegar Id do usuário pelo token */
+  @Patch('address')
+  @ApiOkResponse()
+  @ApiParam({
+    name: 'identifier',
+    required: true
+  })
+  async confirmUserAddress(@Body() confirmAddressRequestDto: ConfirmAddressRequestDto, @Param() params, @Res() response: Response)
+  {
   }
 
   private mapUserDtoToEntity(createUserRequestDto: CreateUserRequestDto): User {
