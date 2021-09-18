@@ -16,4 +16,6 @@ export class CreateUserRequestDto {
   password: string;
   @ApiProperty()
   genre: Genre;
+  @ApiProperty()
+  birthDate: Date;
 }

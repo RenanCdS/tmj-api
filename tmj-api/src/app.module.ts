@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getConnectionOptions } from 'typeorm';
 import { ServiceModule } from './service/service.module';
 import { CustomerServiceModule } from './customer-service/customer-service.module';
+import { ProposalModule } from './proposal/proposal.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CustomerServiceModule } from './customer-service/customer-service.modul
       }),
       ServiceModule,
       CustomerServiceModule,
+      ProposalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

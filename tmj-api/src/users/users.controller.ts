@@ -1,12 +1,13 @@
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Res } from '@nestjs/common';
 import { UserService } from 'src/service/user/user.service';
 import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dto';
 import { Response } from 'express';
 import { ErrorCodes, ErrorMessages, Genre, Role } from 'src/shared/enum';
 import { User } from 'src/shared/models/user.entity';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
-import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
+import { EditUserInfoRequestDto } from 'src/shared/requests/edit-user-info-request.dto';
 
 @ApiTags('users')
 @Controller('v1/users')
@@ -19,6 +20,9 @@ export class UsersController {
   }
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'Realiza o pré-registro do usuário, ou seja, usuário será criado com status de pendência de e-mail'
+  })
   async preRegisterUser(
     @Body() createUserRequestDto: CreateUserRequestDto,
     @Res() response: Response
@@ -63,6 +67,9 @@ export class UsersController {
 
   /**@description Confirma o e-mail informado no cadastro */
   @Patch(':userId/:hash')
+  @ApiOkResponse({
+    description: 'Realiza a confirmação de e-mail'
+  })
   async confirmUserEmail(@Param() params, @Res() response: Response)
   {
     try {
@@ -77,12 +84,18 @@ export class UsersController {
 
   /** TODO: Pegar Id do usuário pelo token */
   @Patch('address')
-  @ApiOkResponse()
-  @ApiParam({
-    name: 'identifier',
-    required: true
+  @ApiOkResponse({
+    description: 'Realiza o cadastro de endereço do usuário'
   })
   async confirmUserAddress(@Body() confirmAddressRequestDto: ConfirmAddressRequestDto, @Param() params, @Res() response: Response)
+  {
+  }
+
+  @Put()
+  @ApiOkResponse({
+    description: 'Edita as informações do usuário'
+  })
+  async editUserInfo(@Body() editUserInfoRequestDto: EditUserInfoRequestDto, @Param() params, @Res() response: Response)
   {
   }
 

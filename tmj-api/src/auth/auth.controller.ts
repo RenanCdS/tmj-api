@@ -18,7 +18,8 @@ export class AuthController {
   @Post('/auth/login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: LoginResponseDto
+    type: LoginResponseDto,
+    description: 'Realiza login'
   })
   async login(@Body() loginDto: LoginRequestDto, @Res() response: Response) {
     try {
