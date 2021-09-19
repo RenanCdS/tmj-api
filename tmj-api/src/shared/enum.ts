@@ -18,8 +18,9 @@ export enum HashType {
 
 export enum UserStatus {
     PENDING_EMAIL = 0,
-    ACTIVE = 1,
-    BLOCKED = 2
+    PENDING_ADDRESS = 1,
+    ACTIVE = 2,
+    BLOCKED = 3
 }
 
 export enum ErrorCodes {

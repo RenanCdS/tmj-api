@@ -10,6 +10,7 @@ async function bootstrap() {
     .setDescription('TMJ API description')
     .setVersion('1.0')
     .addTag('V1')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

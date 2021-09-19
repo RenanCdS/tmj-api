@@ -32,6 +32,9 @@ export class User extends Base {
   @Column()
   email: string;
 
+  @Column()
+  birthDate: Date;
+
   @Column({ default: UserStatus.ACTIVE })
   userStatus: UserStatus;
 

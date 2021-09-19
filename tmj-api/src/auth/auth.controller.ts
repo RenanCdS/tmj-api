@@ -6,7 +6,7 @@ import { Response } from 'express';
 import { EmailService } from "src/service/email/email.service";
 import { PasswordResetRequestDto } from "src/shared/requests/password-reset-request.dto";
 import { ResetPasswordRequestDto } from "src/shared/requests/reset-password-request.dto";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { LoginResponseDto } from "src/shared/responses/login-response.dto";
 
 @ApiTags('auth')
@@ -60,6 +60,7 @@ export class AuthController {
   }
 
   @Get('hello-world')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async getHello()
   {
