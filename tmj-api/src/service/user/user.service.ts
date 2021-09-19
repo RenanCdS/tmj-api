@@ -38,7 +38,7 @@ export class UserService {
 
             try {
                 const user = await this.userRepository.findOne({ userId });
-                user.userStatus = UserStatus.ACTIVE;
+                user.userStatus = UserStatus.PENDING_ADDRESS;
 
                 await this.userRepository.save(user);
 

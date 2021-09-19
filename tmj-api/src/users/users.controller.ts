@@ -67,6 +67,12 @@ export class UsersController {
 
   /**@description Confirma o e-mail informado no cadastro */
   @Patch(':userId/:hash')
+  @ApiParam({
+    name: 'userId'
+  })
+  @ApiParam({
+    name: 'hash'
+  })
   @ApiOkResponse({
     description: 'Realiza a confirmação de e-mail'
   })
@@ -109,6 +115,7 @@ export class UsersController {
     user.cpf = createUserRequestDto.cpf;
     user.phone = createUserRequestDto.phone;
     user.genre = createUserRequestDto.genre;
+    user.birthDate = createUserRequestDto.birthDate;
 
     return user;
   }
