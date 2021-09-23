@@ -6,8 +6,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/constants';
 import { EmailService } from './email/email.service';
 import { HashService } from './hash/hash.service';
+import { ServiceRequestService } from './service-request/service-request.service';
 
-const services = [UserService, AuthService, EmailService, HashService];
+const services = [UserService, AuthService, EmailService, HashService, ServiceRequestService];
 
 @Module({
   imports: [

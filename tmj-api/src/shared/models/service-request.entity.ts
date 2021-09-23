@@ -1,38 +1,43 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ServiceRequestStatus } from "../enum";
-import { Address } from "./address.entity";
 import { Base } from "./base.entity";
 import { ServiceProposed } from "./service-proposed.entity";
-import { Service } from "./service.entity";
 import { User } from "./user.entity";
-import { Notification } from "./notification.entity";
 
 @Entity({ name: 'tb_service_request' })
 export class ServiceRequest extends Base {
 
+    constructor(serviceName: string, serviceDescription: string, comments: string, image: string) {
+        super();
+        this.serviceName = serviceName;
+        this.serviceDescription = serviceDescription;
+        this.comments = comments;
+        this.image = image;
+    }
+     
     @PrimaryGeneratedColumn()
     serviceRequestId: number;
 
     @Column()
-    description: string;
+    serviceName: string;
 
     @Column()
+    serviceDescription: string;
+
+    @Column({ default: ServiceRequestStatus.ACTIVE })
     status: ServiceRequestStatus;
 
     @Column()
     comments: string;
 
     @Column()
-    expectedPrice: number;
+    image: string;
 
-    @Column()
+    @Column({ default: 0 })
     finalPrice: number;
 
     @Column()
-    customerRating: number;
-
-    @Column()
-    professionalRating: number;
+    customerId: number;
 
     @ManyToOne(() => User, user => user.serviceRequestCustomer)
     @JoinColumn({ name: "customerId" })
@@ -42,16 +47,10 @@ export class ServiceRequest extends Base {
     @JoinColumn({ name: "professionalId" })
     professional: User;
 
-    @OneToOne(() => Address, address => address.addressId)
-    address: Address;
-
-    @ManyToOne(() => Service, service => service.serviceRequests)
-    @JoinColumn({ name: "serviceId" })
-    service: Service;
-
     @OneToMany(() => ServiceProposed, serviceProposed => serviceProposed.serviceRequest)
     servicesProposed: ServiceProposed[];
 
-    @OneToMany(() => Notification, notification => notification.serviceRequest)
-    notifications: Notification[];
+    addCustomerId(customerId: number): void {
+        this.customerId = customerId;
+    }
 }

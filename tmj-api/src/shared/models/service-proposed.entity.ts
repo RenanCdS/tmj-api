@@ -1,6 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Base } from "./base.entity";
-import { ServiceProposedComment } from "./service-proposed-comment.entity";
 import { ServiceRequest } from "./service-request.entity";
 import { User } from "./user.entity";
 
@@ -22,7 +21,4 @@ export class ServiceProposed extends Base {
     @ManyToOne(() => ServiceRequest, serviceRequest => serviceRequest.servicesProposed)
     @JoinColumn({ name: 'serviceRequestId' })
     serviceRequest: ServiceRequest;
-
-    @OneToMany(() => ServiceProposedComment, serviceProposedComment => serviceProposedComment.serviceProposed)
-    serviceProposedComments: ServiceProposedComment[];
 }

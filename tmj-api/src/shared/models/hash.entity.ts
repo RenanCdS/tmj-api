@@ -9,7 +9,7 @@ export class Hash extends Base {
     @PrimaryGeneratedColumn()
     hashId: number;
 
-    @ManyToOne(() => User, user => user.serviceProposedComments)
+    @ManyToOne(() => User, user => user.hashes)
     @JoinColumn({ name: 'userId' })
     user: User;
 

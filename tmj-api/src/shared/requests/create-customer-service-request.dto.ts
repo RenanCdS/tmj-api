@@ -6,5 +6,7 @@ export class CreateCustomerServiceRequestDto {
     @ApiProperty()
     serviceDescription: string;
     @ApiProperty()
+    comments: string;
+    @ApiProperty()
     image: Express.Multer.File;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Res, Request, UseGuards } from "@nestjs/common";
 import { AuthService } from "src/service/auth/auth.service";
 import { LoginRequestDto } from "src/shared/requests/login-request.dto";
 import { JwtAuthGuard } from "./jwt-auth.guard";
@@ -62,8 +62,9 @@ export class AuthController {
   @Get('hello-world')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async getHello()
+  async getHello(@Request() req)
   {
+  console.log(req.user);
     this.emailService.sendEmail();
     return 'Hello World!';
   }

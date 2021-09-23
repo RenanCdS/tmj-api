@@ -1,12 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Genre, Role, UserStatus } from '../enum';
 import { Base } from './base.entity';
-import { ServiceProposedComment } from './service-proposed-comment.entity';
 import { ServiceProposed } from './service-proposed.entity';
 import { ServiceRequest } from './service-request.entity';
-import { UserService } from './user-service.entity';
 import { UserAddress } from './user.address.entity';
-import { Notification } from './notification.entity';
 import { Hash } from './hash.entity';
 
 @Entity({ name: 'tb_user' })
@@ -47,9 +44,6 @@ export class User extends Base {
   @Column({ nullable: true })
   rating: number;
 
-  @OneToMany(() => UserService, userService => userService.user)
-  userServices: UserService[];
-
   @OneToMany(() => UserAddress, userAddress => userAddress.user)
   userAddresses: UserAddress[];
 
@@ -61,12 +55,6 @@ export class User extends Base {
 
   @OneToMany(() => ServiceProposed, serviceProposed => serviceProposed.professional)
   servicesProposed: ServiceProposed[];
-
-  @OneToMany(() => ServiceProposedComment, serviceProposedComment => serviceProposedComment.user)
-  serviceProposedComments: ServiceProposedComment[];
-
-  @OneToMany(() => Notification, notification => notification.user)
-  notifications: Notification[];
 
   @OneToMany(() => Hash, hash => hash.user)
   hashes: Hash[];

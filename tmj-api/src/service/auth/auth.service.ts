@@ -18,6 +18,7 @@ export class AuthService {
 
     async login(loginDto: LoginRequestDto) : Promise<LoginResponseDto>
     {
+
         const userFromRepo = await this.usersService.getUserByEmail(loginDto.email);
 
         if (userFromRepo === null || userFromRepo === undefined) {
