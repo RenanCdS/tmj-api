@@ -1,14 +1,15 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards, Request, Res, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards, Request, Res, HttpStatus, DefaultValuePipe } from '@nestjs/common';
 import { ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Response } from 'express';
+import { response, Response } from 'express';
 import { ServiceRequestService } from 'src/service/service-request/service-request.service';
 import { PaginationQuery } from 'src/shared/query/pagination-query.dto';
 import { CreateCustomerServiceRequestDto } from 'src/shared/requests/create-customer-service-request.dto';
 import { GetCustomerServiceByIdResponseDto } from 'src/shared/responses/get-customer-service-by-id-response.dto';
-import { GetCustomerServiceResponseDto } from 'src/shared/responses/get-customer-service.dto';
 import { GetUserCustomerServicesResponseDto } from 'src/shared/responses/get-user-customer-services-response.dto';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
+import { GetServiceRequestsResponseDto } from 'src/shared/responses/get-service-requests.dto';
+import { PaginationPipe } from 'src/shared/pipes/pagination.pipe';
 
 @ApiTags('customer-service')
 @Controller('v1/customer-service')
@@ -34,17 +35,23 @@ export class CustomerServiceController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({
     type: PaginationQuery
   })
   @ApiOkResponse({
-    type: GetCustomerServiceResponseDto,
+    type: GetServiceRequestsResponseDto,
     description: 'Recuperar os serviços existentes'
   })
-  async getCustomerServices(@Query() paginationInfo: PaginationQuery) {
+  async getCustomerServices(@Query(new DefaultValuePipe({ pageSize: 5, pageNumber: 1}), new PaginationPipe()) paginationInfo: PaginationQuery) {
+    try {
+      const serviceRequests = await this.serviceRequestService.getServiceRequests(paginationInfo);
+      return serviceRequests;
+    } catch (err) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
   }
 
-  /** TODO: Recuperar id do usuário pelo token */
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({
@@ -54,7 +61,7 @@ export class CustomerServiceController {
                             @Res() response: Response) {
     try { 
       const userInfo = request.user;
-      await this.serviceRequestService.createServiceRequest(createCustomerServiceRequestDto, userInfo.userId);
+      await this.serviceRequestService.createServiceRequest(createCustomerServiceRequestDto, userInfo.userId, userInfo.userStatus);
 
       return response.status(HttpStatus.CREATED).json();
     } catch (err) {

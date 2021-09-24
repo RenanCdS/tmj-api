@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CustomerServiceResponseDto {
+export class ServiceRequestResponseDto {
     @ApiProperty()
     serviceName: string;
     @ApiProperty()
     serviceDescription: string;
     @ApiProperty()
-    imageUrl: string;
+    image: string;
     @ApiProperty()
     username: string;
 }
