@@ -11,25 +11,24 @@ import { merge } from 'object-mapper';
 import { serviceRequestMapper } from 'src/shared/mapper/service-request-mapper';
 import { ServiceRequestResponseDto } from 'src/shared/responses/service-request-response.dto';
 import { PaginationResponseDto } from 'src/shared/responses/pagination-response.dto';
-import { User } from 'src/shared/models/user.entity';
 
 @Injectable()
 export class ServiceRequestService {
     constructor(@InjectRepository(ServiceRequest)
-        private serviceRequestRepository: Repository<ServiceRequest>) {
+    private serviceRequestRepository: Repository<ServiceRequest>) {
     }
 
     async getServiceRequests(paginationInfo: PaginationQuery): Promise<GetServiceRequestsResponseDto> {
         try {
             const [serviceRequests, totalResults] = await this.serviceRequestRepository.createQueryBuilder('serviceRequest')
-                                    .leftJoin('serviceRequest.customer', 'customer')
-                                    .orderBy('serviceRequest.createdAt', 'DESC')
-                                    .skip((paginationInfo.pageNumber - 1) * paginationInfo.pageSize)
-                                    .take(paginationInfo.pageSize)
-                                    .getManyAndCount();
+                .leftJoin('serviceRequest.customer', 'customer')
+                .orderBy('serviceRequest.createdAt', 'DESC')
+                .skip((paginationInfo.pageNumber - 1) * paginationInfo.pageSize)
+                .take(paginationInfo.pageSize)
+                .getManyAndCount();
 
             const serviceRequestsDto = serviceRequests.map(serviceRequest => {
-                const serviceRequestDto = new ServiceRequestResponseDto(); 
+                const serviceRequestDto = new ServiceRequestResponseDto();
                 return merge<ServiceRequestResponseDto>(serviceRequest, serviceRequestDto, serviceRequestMapper);
             });
 
@@ -50,7 +49,7 @@ export class ServiceRequestService {
                 return Promise.reject(new ErrorResponseDto(ErrorCodes.PENDING_ADDRESS, ErrorMessages.PENDING_ADDRESS, HttpStatus.BAD_REQUEST));
             }
             const serviceRequestToBeInserted = new ServiceRequest(serviceRequestDto.serviceName, serviceRequestDto.serviceDescription,
-                                             serviceRequestDto.comments, this.getImageUrl());
+                serviceRequestDto.comments, this.getImageUrl());
             serviceRequestToBeInserted.addCustomerId(userId);
 
             await this.serviceRequestRepository.insert(serviceRequestToBeInserted);

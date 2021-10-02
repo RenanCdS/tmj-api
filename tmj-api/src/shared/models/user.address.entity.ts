@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Address } from "./address.entity";
 import { Base } from "./base.entity";
 import { User } from "./user.entity";
@@ -11,6 +11,12 @@ export class UserAddress extends Base {
     @ManyToOne(() => User, user => user.userAddresses)
     @JoinColumn({ name: 'serviceId' })
     user: User;
+
+    @Column()
+    userId: number;
+
+    @Column()
+    addressId: number;
 
     @OneToOne(() => Address, address => address.userAddress)
     address: Address;

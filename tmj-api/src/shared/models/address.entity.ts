@@ -15,7 +15,7 @@ export class Address extends Base {
     postalCode: string;
 
     @Column()
-    address: string;
+    city: string;
 
     @Column()
     number: number;

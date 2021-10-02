@@ -1,29 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/shared/models/user.entity';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Hash } from 'src/shared/models/hash.entity';
 import { ErrorCodes, ErrorMessages, HashType, UserStatus } from 'src/shared/enum';
 import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
 import { HashService } from '../hash/hash.service';
+import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
+import { merge } from 'object-mapper';
+import { addressMapper } from 'src/shared/mapper/address-mapper';
+import { Address } from 'src/shared/models/address.entity';
+import { UserAddress } from 'src/shared/models/user.address.entity';
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly hashService: HashService,
         @InjectRepository(User)
-        private userRepository: Repository<User>
-    ) {}
+        private userRepository: Repository<User>,
+        @InjectRepository(UserAddress)
+        private userAddressRepository: Repository<UserAddress>,
+        @InjectRepository(Address)
+        private addressRepository: Repository<Address>
+    ) { }
 
     findAll(): Promise<User[]> {
-        return this.userRepository.find({ where: [
-            { isActive: true }
-        ]});
+        return this.userRepository.find({
+            where: [
+                { isActive: true }
+            ]
+        });
     }
 
     getUserByEmail(email: string): Promise<User> {
         return this.userRepository.findOne({ email, isActive: true });
+    }
+
+    async confirUserAddress(userId: number, confirmAddressDto: ConfirmAddressRequestDto) {
+        await getConnection().transaction(async transactionEntityManager => {
+            let addressToInsert = new Address();
+            merge<Address>(confirmAddressDto, addressToInsert, addressMapper);
+            await this.addressRepository.save(addressToInsert);
+
+            const userAddressToInsert = new UserAddress();
+            userAddressToInsert.addressId = addressToInsert.addressId;
+            userAddressToInsert.userId = userId;
+
+            await this.userAddressRepository.save(userAddressToInsert);
+
+            const user = await this.userRepository.findOne({ userId, isActive: true });
+            user.userStatus = UserStatus.ACTIVE;
+
+            await this.userRepository.save(user);
+        });
     }
 
     async confirmUserEmail(hash: string, userId: number): Promise<void> {
@@ -33,7 +63,7 @@ export class UserService {
 
             if (userHash.expiration.getTime() <= new Date().getTime()) {
                 return Promise.reject(new ErrorResponseDto(ErrorCodes.EXPIRED_HASH,
-                                 ErrorMessages.EXPIRED_HASH));
+                    ErrorMessages.EXPIRED_HASH));
             }
 
             try {
@@ -48,14 +78,14 @@ export class UserService {
 
                 return;
             }
-            catch (err){
+            catch (err) {
                 return Promise.reject(new ErrorResponseDto(ErrorCodes.SISTEMIC_ERROR,
-                                 ErrorMessages.SISTEMIC_ERROR));
+                    ErrorMessages.SISTEMIC_ERROR));
             }
         }
 
         return Promise.reject(new ErrorResponseDto(ErrorCodes.MISSING_HASH,
-                                 ErrorMessages.MISSING_HASH));
+            ErrorMessages.MISSING_HASH));
     }
 
     async preRegisterUserAsync(user: User): Promise<any> {
@@ -63,7 +93,7 @@ export class UserService {
 
         if (userFromRepo !== null && userFromRepo !== undefined) {
             return Promise.reject(new ErrorResponseDto(ErrorCodes.USER_ALREADY_REGISTERED,
-                                 ErrorMessages.USER_ALREADY_REGISTERED));
+                ErrorMessages.USER_ALREADY_REGISTERED));
         }
 
         const salt = await this.getSalt();
@@ -77,14 +107,14 @@ export class UserService {
         await this.userRepository.insert(user);
 
         const confirmationEmailHash = new Hash();
-        
+
         confirmationEmailHash.hash = this.hashService.generateHash();
         confirmationEmailHash.user = user;
         confirmationEmailHash.hashType = HashType.EMAIL_CONFIRMATION;
         confirmationEmailHash.expiration = new Date();
         confirmationEmailHash.expiration
-                            .setMinutes(confirmationEmailHash.expiration.getMinutes() + 20);
-        
+            .setMinutes(confirmationEmailHash.expiration.getMinutes() + 20);
+
         await this.hashService.saveHash(confirmationEmailHash);
 
         this.sendConfirmationEmail(user, confirmationEmailHash.hash);

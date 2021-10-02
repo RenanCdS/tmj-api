@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Res, Request, UseGuards } from '@nestjs/common';
 import { UserService } from 'src/service/user/user.service';
 import { CreateUserRequestDto } from 'src/shared/requests/create-user-request.dto';
 import { Response } from 'express';
@@ -8,11 +8,12 @@ import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
 import { EditUserInfoRequestDto } from 'src/shared/requests/edit-user-info-request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('v1/users')
 export class UsersController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   async getAll() {
@@ -76,8 +77,7 @@ export class UsersController {
   @ApiOkResponse({
     description: 'Realiza a confirmação de e-mail'
   })
-  async confirmUserEmail(@Param() params, @Res() response: Response)
-  {
+  async confirmUserEmail(@Param() params, @Res() response: Response) {
     try {
       await this.userService.confirmUserEmail(params.hash, params.userId);
 
@@ -85,24 +85,32 @@ export class UsersController {
     }
     catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json(err);
-    } 
+    }
   }
 
-  /** TODO: Pegar Id do usuário pelo token */
   @Patch('address')
+  @UseGuards(JwtAuthGuard)
   @ApiOkResponse({
     description: 'Realiza o cadastro de endereço do usuário'
   })
-  async confirmUserAddress(@Body() confirmAddressRequestDto: ConfirmAddressRequestDto, @Param() params, @Res() response: Response)
-  {
+  async confirmUserAddress(@Request() request, @Body() confirmAddressRequestDto: ConfirmAddressRequestDto, @Param() params, @Res() response: Response) {
+    try {
+      const userInfo = request.user;
+      await this.userService.confirUserAddress(userInfo.userId, confirmAddressRequestDto);
+
+      return response.status(HttpStatus.OK).json();
+    } catch (err) {
+      if (err instanceof ErrorResponseDto)
+        return response.status(err.statusCode).json(err);
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+    }
   }
 
   @Put()
   @ApiOkResponse({
     description: 'Edita as informações do usuário'
   })
-  async editUserInfo(@Body() editUserInfoRequestDto: EditUserInfoRequestDto, @Param() params, @Res() response: Response)
-  {
+  async editUserInfo(@Body() editUserInfoRequestDto: EditUserInfoRequestDto, @Param() params, @Res() response: Response) {
   }
 
   private mapUserDtoToEntity(createUserRequestDto: CreateUserRequestDto): User {
