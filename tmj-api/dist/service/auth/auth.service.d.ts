@@ -1,9 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { LoginRequestDto } from 'src/shared/requests/login-request.dto';
-import { LoginResponseDto } from 'src/shared/responses/login-response.dto';
+import { LoginRequestDto } from '../../shared/requests/login-request.dto';
+import { LoginResponseDto } from '../../shared/responses/login-response.dto';
 import { HashService } from '../hash/hash.service';
-import { ResetPasswordRequestDto } from 'src/shared/requests/reset-password-request.dto';
+import { ResetPasswordRequestDto } from '../../shared/requests/reset-password-request.dto';
 export declare class AuthService {
     private readonly usersService;
     private readonly hashService;

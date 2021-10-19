@@ -37,7 +37,8 @@ let HashService = class HashService {
         }
     }
     async findHash(hash) {
-        const userHash = await this.hashRepository.findOne({ where: [
+        const userHash = await this.hashRepository.findOne({
+            where: [
                 { hash: hash },
                 { isActive: true },
             ],
@@ -53,7 +54,8 @@ let HashService = class HashService {
         await this.hashRepository.save(hash);
     }
     async findLatestHashByUserId(userId, hash, hashType = enum_1.HashType.PASSWORD_RESET) {
-        const userHash = await this.hashRepository.findOne({ where: [
+        const userHash = await this.hashRepository.findOne({
+            where: [
                 { hash: hash },
                 { isActive: true },
                 { userId: userId },
@@ -61,11 +63,13 @@ let HashService = class HashService {
             ],
             order: {
                 expiration: 'DESC'
-            } });
+            }
+        });
         return userHash;
     }
     async findLatestHashByEmail(email, hash, hashType = enum_1.HashType.PASSWORD_RESET) {
-        const userHash = await this.hashRepository.findOne({ where: [
+        const userHash = await this.hashRepository.findOne({
+            where: [
                 { hash: hash },
                 { isActive: true },
                 { email },
@@ -73,7 +77,8 @@ let HashService = class HashService {
             ],
             order: {
                 expiration: 'DESC'
-            } });
+            }
+        });
         return userHash;
     }
 };

@@ -1,5 +1,5 @@
-import { HashType } from 'src/shared/enum';
-import { Hash } from 'src/shared/models/hash.entity';
+import { HashType } from '../../shared/enum';
+import { Hash } from '../../shared/models/hash.entity';
 import { Repository } from 'typeorm';
 export declare class HashService {
     private readonly hashRepository;

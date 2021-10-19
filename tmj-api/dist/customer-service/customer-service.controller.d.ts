@@ -8,6 +8,6 @@ export declare class CustomerServiceController {
     constructor(serviceRequestService: ServiceRequestService);
     getCustomerServiceById(params: any): Promise<void>;
     getUserCustomerServices(): Promise<void>;
-    getCustomerServices(paginationInfo: PaginationQuery): Promise<GetServiceRequestsResponseDto | Response<any, Record<string, any>>>;
+    getCustomerServices(paginationInfo: PaginationQuery): Promise<Response<any, Record<string, any>> | GetServiceRequestsResponseDto>;
     createCustomerService(request: any, createCustomerServiceRequestDto: CreateCustomerServiceRequestDto, response: Response): Promise<Response<any, Record<string, any>>>;
 }

@@ -22,7 +22,6 @@ const hash_entity_1 = require("../../shared/models/hash.entity");
 const enum_1 = require("../../shared/enum");
 const error_response_dto_1 = require("../../shared/responses/error-response.dto");
 const hash_service_1 = require("../hash/hash.service");
-const confirm_address_request_dto_1 = require("../../shared/requests/confirm-address-request.dto");
 const object_mapper_1 = require("object-mapper");
 const address_mapper_1 = require("../../shared/mapper/address-mapper");
 const address_entity_1 = require("../../shared/models/address.entity");

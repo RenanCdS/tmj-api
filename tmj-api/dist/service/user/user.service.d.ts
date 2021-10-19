@@ -1,9 +1,9 @@
-import { User } from 'src/shared/models/user.entity';
+import { User } from '../../shared/models/user.entity';
 import { Repository } from 'typeorm';
 import { HashService } from '../hash/hash.service';
-import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
-import { Address } from 'src/shared/models/address.entity';
-import { UserAddress } from 'src/shared/models/user.address.entity';
+import { ConfirmAddressRequestDto } from '../../shared/requests/confirm-address-request.dto';
+import { Address } from '../../shared/models/address.entity';
+import { UserAddress } from '../../shared/models/user.address.entity';
 export declare class UserService {
     private readonly hashService;
     private userRepository;

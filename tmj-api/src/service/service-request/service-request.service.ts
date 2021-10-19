@@ -1,16 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorCodes, ErrorMessages, UserStatus } from 'src/shared/enum';
-import { ServiceRequest } from 'src/shared/models/service-request.entity';
-import { PaginationQuery } from 'src/shared/query/pagination-query.dto';
-import { CreateCustomerServiceRequestDto } from 'src/shared/requests/create-customer-service-request.dto';
-import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
-import { GetServiceRequestsResponseDto } from 'src/shared/responses/get-service-requests.dto';
+import { ErrorCodes, ErrorMessages, UserStatus } from '../../shared/enum';
+import { ServiceRequest } from '../../shared/models/service-request.entity';
+import { PaginationQuery } from '../../shared/query/pagination-query.dto';
+import { CreateCustomerServiceRequestDto } from '../../shared/requests/create-customer-service-request.dto';
+import { ErrorResponseDto } from '../../shared/responses/error-response.dto';
+import { GetServiceRequestsResponseDto } from '../../shared/responses/get-service-requests.dto';
 import { Repository } from 'typeorm';
 import { merge } from 'object-mapper';
-import { serviceRequestMapper } from 'src/shared/mapper/service-request-mapper';
-import { ServiceRequestResponseDto } from 'src/shared/responses/service-request-response.dto';
-import { PaginationResponseDto } from 'src/shared/responses/pagination-response.dto';
+import { serviceRequestMapper } from '../../shared/mapper/service-request-mapper';
+import { ServiceRequestResponseDto } from '../../shared/responses/service-request-response.dto';
+import { PaginationResponseDto } from '../../shared/responses/pagination-response.dto';
 
 @Injectable()
 export class ServiceRequestService {

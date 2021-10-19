@@ -14,13 +14,10 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const user_service_1 = require("../user/user.service");
 const bcrypt = require("bcrypt");
-const login_request_dto_1 = require("../../shared/requests/login-request.dto");
-const login_response_dto_1 = require("../../shared/responses/login-response.dto");
 const error_response_dto_1 = require("../../shared/responses/error-response.dto");
 const enum_1 = require("../../shared/enum");
 const hash_service_1 = require("../hash/hash.service");
 const hash_entity_1 = require("../../shared/models/hash.entity");
-const reset_password_request_dto_1 = require("../../shared/requests/reset-password-request.dto");
 let AuthService = class AuthService {
     constructor(usersService, hashService, jwtService) {
         this.usersService = usersService;

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/shared/models/user.entity';
+import { User } from '../../shared/models/user.entity';
 import { getConnection, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Hash } from 'src/shared/models/hash.entity';
-import { ErrorCodes, ErrorMessages, HashType, UserStatus } from 'src/shared/enum';
-import { ErrorResponseDto } from 'src/shared/responses/error-response.dto';
+import { Hash } from '../../shared/models/hash.entity';
+import { ErrorCodes, ErrorMessages, HashType, UserStatus } from '../../shared/enum';
+import { ErrorResponseDto } from '../../shared/responses/error-response.dto';
 import { HashService } from '../hash/hash.service';
-import { ConfirmAddressRequestDto } from 'src/shared/requests/confirm-address-request.dto';
+import { ConfirmAddressRequestDto } from '../../shared/requests/confirm-address-request.dto';
 import { merge } from 'object-mapper';
-import { addressMapper } from 'src/shared/mapper/address-mapper';
-import { Address } from 'src/shared/models/address.entity';
-import { UserAddress } from 'src/shared/models/user.address.entity';
+import { addressMapper } from '../../shared/mapper/address-mapper';
+import { Address } from '../../shared/models/address.entity';
+import { UserAddress } from '../../shared/models/user.address.entity';
 
 @Injectable()
 export class UserService {

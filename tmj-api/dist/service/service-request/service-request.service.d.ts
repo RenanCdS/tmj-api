@@ -1,8 +1,8 @@
-import { UserStatus } from 'src/shared/enum';
-import { ServiceRequest } from 'src/shared/models/service-request.entity';
-import { PaginationQuery } from 'src/shared/query/pagination-query.dto';
-import { CreateCustomerServiceRequestDto } from 'src/shared/requests/create-customer-service-request.dto';
-import { GetServiceRequestsResponseDto } from 'src/shared/responses/get-service-requests.dto';
+import { UserStatus } from '../../shared/enum';
+import { ServiceRequest } from '../../shared/models/service-request.entity';
+import { PaginationQuery } from '../../shared/query/pagination-query.dto';
+import { CreateCustomerServiceRequestDto } from '../../shared/requests/create-customer-service-request.dto';
+import { GetServiceRequestsResponseDto } from '../../shared/responses/get-service-requests.dto';
 import { Repository } from 'typeorm';
 export declare class ServiceRequestService {
     private serviceRequestRepository;
