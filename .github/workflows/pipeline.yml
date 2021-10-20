@@ -1,0 +1,87 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: TMJ Pipeline
+
+on:
+  push:
+    branches: [master, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'tmj-api'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm install
+      - run: npm run test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'tmj-api'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - run: npm install
+      - run: npm run build --if-present
+
+      - name: Archive production artifacts
+        run: cd dist && zip -r ../deploy_package.zip .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+      - name: Upload package to S3 bucket
+        run: aws s3 cp deploy_package.zip s3://tmj-deploy/
+
+      - name: Create Beanstalk application
+        run: |
+          aws elasticbeanstalk create-application-version \
+          --application-name tmj-api \
+          --source-bundle S3Bucket="tmj-deploy",S3Key="deploy_package.zip" \
+          --version-label "ver-${{ github.sha }}" \
+          --description "commit-sha-${{ github.sha }}"
+
+      - name: Deploy API Dev
+        if: endsWith(github.ref, '/develop')
+        run: aws elasticbeanstalk update-environment --environment-name tmj-dev --version-label "ver-${{ github.sha }}"
+
+      - name: Deploy API Prod
+        if: endsWith(github.ref, '/master')
+        run: aws elasticbeanstalk update-environment --environment-name tmj-prod --version-label "ver-${{ github.sha }}"
+
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: 'tmj-api'
+  #   steps:
+  #   - name: Configure AWS Credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: 'us-east-1'
+
