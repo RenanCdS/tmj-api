@@ -4,12 +4,14 @@ import { HashService } from '../hash/hash.service';
 import { ConfirmAddressRequestDto } from '../../shared/requests/confirm-address-request.dto';
 import { Address } from '../../shared/models/address.entity';
 import { UserAddress } from '../../shared/models/user.address.entity';
+import { EmailService } from '../email/email.service';
 export declare class UserService {
+    private readonly emailService;
     private readonly hashService;
     private userRepository;
     private userAddressRepository;
     private addressRepository;
-    constructor(hashService: HashService, userRepository: Repository<User>, userAddressRepository: Repository<UserAddress>, addressRepository: Repository<Address>);
+    constructor(emailService: EmailService, hashService: HashService, userRepository: Repository<User>, userAddressRepository: Repository<UserAddress>, addressRepository: Repository<Address>);
     findAll(): Promise<User[]>;
     getUserByEmail(email: string): Promise<User>;
     confirUserAddress(userId: number, confirmAddressDto: ConfirmAddressRequestDto): Promise<void>;

@@ -12,10 +12,14 @@ import { merge } from 'object-mapper';
 import { addressMapper } from '../../shared/mapper/address-mapper';
 import { Address } from '../../shared/models/address.entity';
 import { UserAddress } from '../../shared/models/user.address.entity';
+import { EmailService } from '../email/email.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
     constructor(
+        private readonly configService: ConfigService,
+        private readonly emailService: EmailService,
         private readonly hashService: HashService,
         @InjectRepository(User)
         private userRepository: Repository<User>,
@@ -117,7 +121,7 @@ export class UserService {
 
         await this.hashService.saveHash(confirmationEmailHash);
 
-        this.sendConfirmationEmail(user, confirmationEmailHash.hash);
+        await this.sendConfirmationEmail(user, confirmationEmailHash.hash);
     }
 
     async generatePassword(password: string, salt: string) {
@@ -133,8 +137,13 @@ export class UserService {
     }
 
     /**@description Envia e-mail de confimação do usuário */
-    private sendConfirmationEmail(user: User, hash: string): void {
+    private async sendConfirmationEmail(user: User, hash: string) {
         // throw Error('Confirmation e-mail not implemented');
+        const emailParameters = {
+            '%LINK%': `${this.configService.get<string>('WEB_URL')}/confirmacao-email/${user.userId}/${hash}`
+        };
+
+        await this.emailService.sendEmail(1, user.email, emailParameters);
     }
 
     private async getSalt(): Promise<string> {

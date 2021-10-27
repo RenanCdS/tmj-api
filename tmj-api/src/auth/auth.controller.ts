@@ -13,7 +13,7 @@ import { LoginResponseDto } from "src/shared/responses/login-response.dto";
 @Controller('/v1')
 export class AuthController {
   constructor(private readonly authService: AuthService,
-            private readonly emailService: EmailService) {}
+    private readonly emailService: EmailService) { }
 
   @Post('/auth/login')
   @HttpCode(HttpStatus.OK)
@@ -26,7 +26,7 @@ export class AuthController {
       const token = await this.authService.login(loginDto);
       return response.status(HttpStatus.OK).json(token);
     }
-    catch (err){
+    catch (err) {
       return response.status(HttpStatus.BAD_REQUEST).json(err);
     }
   }
@@ -62,10 +62,9 @@ export class AuthController {
   @Get('hello-world')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async getHello(@Request() req)
-  {
-  console.log(req.user);
-    this.emailService.sendEmail();
+  async getHello(@Request() req) {
+    console.log(req.user);
+    // this.emailService.sendEmail();
     return 'Hello World!';
   }
 }

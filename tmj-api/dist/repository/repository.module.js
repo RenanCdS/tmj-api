@@ -15,6 +15,7 @@ const service_request_entity_1 = require("../shared/models/service-request.entit
 const user_address_entity_1 = require("../shared/models/user.address.entity");
 const user_entity_1 = require("../shared/models/user.entity");
 const hash_entity_1 = require("../shared/models/hash.entity");
+const email_entity_1 = require("../shared/models/email.entity");
 let RepositoryModule = class RepositoryModule {
 };
 RepositoryModule = __decorate([
@@ -26,6 +27,7 @@ RepositoryModule = __decorate([
                 service_proposed_entity_1.ServiceProposed,
                 service_request_entity_1.ServiceRequest,
                 user_address_entity_1.UserAddress,
+                email_entity_1.Email,
                 hash_entity_1.Hash
             ])
         ],

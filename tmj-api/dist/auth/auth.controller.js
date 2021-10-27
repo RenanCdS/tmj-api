@@ -56,7 +56,6 @@ let AuthController = class AuthController {
     }
     async getHello(req) {
         console.log(req.user);
-        this.emailService.sendEmail();
         return 'Hello World!';
     }
 };

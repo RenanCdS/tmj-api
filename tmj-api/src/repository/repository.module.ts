@@ -6,6 +6,7 @@ import { ServiceRequest } from '../shared/models/service-request.entity';
 import { UserAddress } from '../shared/models/user.address.entity';
 import { User } from '../shared/models/user.entity';
 import { Hash } from '../shared/models/hash.entity';
+import { Email } from 'src/shared/models/email.entity';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { Hash } from '../shared/models/hash.entity';
             ServiceProposed,
             ServiceRequest,
             UserAddress,
+            Email,
             Hash
         ])
     ],

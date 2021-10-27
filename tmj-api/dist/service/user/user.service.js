@@ -26,8 +26,10 @@ const object_mapper_1 = require("object-mapper");
 const address_mapper_1 = require("../../shared/mapper/address-mapper");
 const address_entity_1 = require("../../shared/models/address.entity");
 const user_address_entity_1 = require("../../shared/models/user.address.entity");
+const email_service_1 = require("../email/email.service");
 let UserService = class UserService {
-    constructor(hashService, userRepository, userAddressRepository, addressRepository) {
+    constructor(emailService, hashService, userRepository, userAddressRepository, addressRepository) {
+        this.emailService = emailService;
         this.hashService = hashService;
         this.userRepository = userRepository;
         this.userAddressRepository = userAddressRepository;
@@ -108,6 +110,9 @@ let UserService = class UserService {
         await this.userRepository.delete(id);
     }
     sendConfirmationEmail(user, hash) {
+        const emailParameters = {
+            LINK: `http://localhost:4200/confirmacao-email/${user.userId}/${hash}`
+        };
     }
     async getSalt() {
         return await bcrypt.genSalt();
@@ -118,10 +123,11 @@ let UserService = class UserService {
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(2, (0, typeorm_1.InjectRepository)(user_address_entity_1.UserAddress)),
-    __param(3, (0, typeorm_1.InjectRepository)(address_entity_1.Address)),
-    __metadata("design:paramtypes", [hash_service_1.HashService,
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_address_entity_1.UserAddress)),
+    __param(4, (0, typeorm_1.InjectRepository)(address_entity_1.Address)),
+    __metadata("design:paramtypes", [email_service_1.EmailService,
+        hash_service_1.HashService,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
