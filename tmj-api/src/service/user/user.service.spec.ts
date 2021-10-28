@@ -1,9 +1,11 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { RepositoryModule } from '../../repository/repository.module';
 import { Address } from '../../shared/models/address.entity';
 import { UserAddress } from '../../shared/models/user.address.entity';
 import { User } from '../../shared/models/user.entity';
+import { EmailService } from '../email/email.service';
 import { HashService } from '../hash/hash.service';
 import { UserService } from './user.service';
 
@@ -16,6 +18,14 @@ describe('UserService', () => {
 
         {
           provide: HashService,
+          useValue: () => { }
+        },
+        {
+          provide: EmailService,
+          useValue: () => { }
+        },
+        {
+          provide: ConfigService,
           useValue: () => { }
         },
         {

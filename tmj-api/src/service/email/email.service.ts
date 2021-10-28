@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as aws from 'aws-sdk';
-import { Email } from 'src/shared/models/email.entity';
+import { Email } from '../../shared/models/email.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
