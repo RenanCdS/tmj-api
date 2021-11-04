@@ -1,4 +1,4 @@
-import { Email } from 'src/shared/models/email.entity';
+import { Email } from '../../shared/models/email.entity';
 import { Repository } from 'typeorm';
 export declare class EmailService {
     private readonly emailRepository;

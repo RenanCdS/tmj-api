@@ -27,8 +27,10 @@ const address_mapper_1 = require("../../shared/mapper/address-mapper");
 const address_entity_1 = require("../../shared/models/address.entity");
 const user_address_entity_1 = require("../../shared/models/user.address.entity");
 const email_service_1 = require("../email/email.service");
+const config_1 = require("@nestjs/config");
 let UserService = class UserService {
-    constructor(emailService, hashService, userRepository, userAddressRepository, addressRepository) {
+    constructor(configService, emailService, hashService, userRepository, userAddressRepository, addressRepository) {
+        this.configService = configService;
         this.emailService = emailService;
         this.hashService = hashService;
         this.userRepository = userRepository;
@@ -98,7 +100,7 @@ let UserService = class UserService {
         confirmationEmailHash.expiration
             .setMinutes(confirmationEmailHash.expiration.getMinutes() + 20);
         await this.hashService.saveHash(confirmationEmailHash);
-        this.sendConfirmationEmail(user, confirmationEmailHash.hash);
+        await this.sendConfirmationEmail(user, confirmationEmailHash.hash);
     }
     async generatePassword(password, salt) {
         return await this.hash(password, salt);
@@ -109,10 +111,11 @@ let UserService = class UserService {
     async remove(id) {
         await this.userRepository.delete(id);
     }
-    sendConfirmationEmail(user, hash) {
+    async sendConfirmationEmail(user, hash) {
         const emailParameters = {
-            LINK: `http://localhost:4200/confirmacao-email/${user.userId}/${hash}`
+            '%LINK%': `${this.configService.get('WEB_URL')}/confirmacao-email/${user.userId}/${hash}`
         };
+        await this.emailService.sendEmail(1, user.email, emailParameters);
     }
     async getSalt() {
         return await bcrypt.genSalt();
@@ -123,10 +126,11 @@ let UserService = class UserService {
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(3, (0, typeorm_1.InjectRepository)(user_address_entity_1.UserAddress)),
-    __param(4, (0, typeorm_1.InjectRepository)(address_entity_1.Address)),
-    __metadata("design:paramtypes", [email_service_1.EmailService,
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(4, (0, typeorm_1.InjectRepository)(user_address_entity_1.UserAddress)),
+    __param(5, (0, typeorm_1.InjectRepository)(address_entity_1.Address)),
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        email_service_1.EmailService,
         hash_service_1.HashService,
         typeorm_2.Repository,
         typeorm_2.Repository,

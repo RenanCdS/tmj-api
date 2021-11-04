@@ -9,10 +9,14 @@ import { ErrorCodes, ErrorMessages, HashType, UserStatus } from '../../shared/en
 import { HashService } from '../hash/hash.service';
 import { Hash } from '../../shared/models/hash.entity';
 import { ResetPasswordRequestDto } from '../../shared/requests/reset-password-request.dto';
+import { EmailService } from '../email/email.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
     constructor(private readonly usersService: UserService,
+        private readonly emailService: EmailService,
+        private readonly configService: ConfigService,
         private readonly hashService: HashService,
         private readonly jwtService: JwtService) { }
 
@@ -64,6 +68,7 @@ export class AuthService {
             await this.hashService.saveHash(hashToInsert);
 
             // TODO: enviar e-mail com o hash para o usuário
+            this.sendResetEmail(email, hashToInsert.hash);
         }
         catch (err) {
             return Promise.reject(err);
@@ -94,5 +99,14 @@ export class AuthService {
             return Promise.reject(err);
         }
         // TODO: enviar e-mail informando que password foi alterado
+    }
+
+    private async sendResetEmail(email: string, hash: string) {
+        // throw Error('Confirmation e-mail not implemented');
+        const emailParameters = {
+            '%LINK%': `${this.configService.get<string>('WEB_URL')}/reset-senha/${hash}`
+        };
+
+        await this.emailService.sendEmail(2, email, emailParameters);
     }
 }

@@ -24,10 +24,11 @@ let EmailService = class EmailService {
     }
     async sendEmail(templateId, destinationEmail, parameters) {
         const emailFromRepo = await this.emailRepository.findOne(templateId);
-        let htmlTemplate = emailFromRepo.htmlTemplate;
+        let htmlTemplate = emailFromRepo.htmlTemplate.replace(/(\r\n|\n|\r)/gm, '');
         var parameterKeys = Object.keys(parameters);
         parameterKeys.forEach((value, index) => {
-            htmlTemplate = htmlTemplate.replace(value, parameters[value]);
+            const re = new RegExp(value, 'g');
+            htmlTemplate = htmlTemplate.replace(re, parameters[value]);
         });
         const ses = new aws.SES({ region: 'us-east-1' });
         ses.sendEmail({
