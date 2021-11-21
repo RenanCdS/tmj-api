@@ -18,9 +18,13 @@ const error_response_dto_1 = require("../../shared/responses/error-response.dto"
 const enum_1 = require("../../shared/enum");
 const hash_service_1 = require("../hash/hash.service");
 const hash_entity_1 = require("../../shared/models/hash.entity");
+const email_service_1 = require("../email/email.service");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(usersService, hashService, jwtService) {
+    constructor(usersService, emailService, configService, hashService, jwtService) {
         this.usersService = usersService;
+        this.emailService = emailService;
+        this.configService = configService;
         this.hashService = hashService;
         this.jwtService = jwtService;
     }
@@ -57,6 +61,7 @@ let AuthService = class AuthService {
                 .setMinutes(hashToInsert.expiration.getMinutes() + 20);
             hashToInsert.hash = this.hashService.generateHash();
             await this.hashService.saveHash(hashToInsert);
+            this.sendResetEmail(email, hashToInsert.hash);
         }
         catch (err) {
             return Promise.reject(err);
@@ -80,10 +85,18 @@ let AuthService = class AuthService {
             return Promise.reject(err);
         }
     }
+    async sendResetEmail(email, hash) {
+        const emailParameters = {
+            '%LINK%': `${this.configService.get('WEB_URL')}/reset-senha/${hash}`
+        };
+        await this.emailService.sendEmail(2, email, emailParameters);
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [user_service_1.UserService,
+        email_service_1.EmailService,
+        config_1.ConfigService,
         hash_service_1.HashService,
         jwt_1.JwtService])
 ], AuthService);
